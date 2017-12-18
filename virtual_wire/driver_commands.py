@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from cloudshell.layer_one.core.driver_commands_interface import DriverCommandsInterface
+from cloudshell.layer_one.core.response.response_info import GetStateIdResponseInfo
+from virtual_wire.cli.cli_handler import CliHandler
+from virtual_wire.command_actions.autoload_actions import AutoloadActions
+from virtual_wire.command_actions.system_actions import SystemActions
 
 
 class DriverCommands(DriverCommandsInterface):
@@ -15,6 +19,7 @@ class DriverCommands(DriverCommandsInterface):
         :type logger: logging.Logger
         """
         self._logger = logger
+        self._cli_handler = CliHandler(self._logger)
 
     def login(self, address, username, password):
         """
@@ -34,7 +39,10 @@ class DriverCommands(DriverCommandsInterface):
                 device_info = session.send_command('show version')
                 self._logger.info(device_info)
         """
-        raise NotImplementedError
+        self._cli_handler.define_session_attributes(address, username, password)
+        with self._cli_handler.default_mode_service() as session:
+            autoload_actions = AutoloadActions(session, self._logger)
+            self._logger.info(autoload_actions.board_table())
 
     def get_state_id(self):
         """
@@ -50,7 +58,9 @@ class DriverCommands(DriverCommandsInterface):
                 chassis_name = session.send_command('show chassis name')
                 return chassis_name
         """
-        raise NotImplementedError
+        with self._cli_handler.default_mode_service() as session:
+            system_actions = SystemActions(session, self._logger)
+            return GetStateIdResponseInfo(system_actions.get_state_id())
 
     def set_state_id(self, state_id):
         """
@@ -66,7 +76,9 @@ class DriverCommands(DriverCommandsInterface):
                 # Execute command
                 session.send_command('set chassis name {}'.format(state_id))
         """
-        raise NotImplementedError
+        with self._cli_handler.default_mode_service() as session:
+            system_actions = SystemActions(session, self._logger)
+            system_actions.set_state_id(state_id)
 
     def map_bidi(self, src_port, dst_port):
         """
