@@ -23,8 +23,7 @@ class DefaultCommandMode(CommandMode):
         :type cli_operations: cloudshell.cli.cli_service.CliService
         :return:
         """
-        cli_operations.send_command('switch-local')
-        cli_operations.send_command('pager off')
+        pass
 
     def enter_action_map(self):
         return OrderedDict()

@@ -28,45 +28,35 @@ class AutoloadActions(object):
         :rtype: dict
         """
         board_table = {}
-        info = CommandTemplateExecutor(self._cli_service, command_template.SWITCH_INFO).execute_command()
-        # serial_search = re.search(r'BOARD\s+.*S/N\((.+?)\)', output, re.DOTALL)
-        # if serial_search:
-        #     board_table['serial_number'] = serial_search.group(1)
-        #
-        # max_port_east_search = re.search(r'MAX_PORT_EAST\s+(\d+)', output, re.DOTALL)
-        # max_port_west_search = re.search(r'MAX_PORT_WEST\s+(\d+)', output, re.DOTALL)
-        # if max_port_east_search and max_port_west_search:
-        #     max_port_east = max_port_east_search.group(1)
-        #     max_port_west = max_port_west_search.group(1)
-        #     board_table['model_name'] = "AFM-360-{0}X{1}".format(max_port_east, max_port_west)
-        #
-        # sw_version_search = re.search(r'ACTIVE\s+SW\s+VER\s+(\d+\.\d+\.\d+\.\d+)', output, re.DOTALL)
-        # if sw_version_search:
-        #     board_table['sw_version'] = sw_version_search.group(1)
-        #
-        # return board_table
-        return info
+        info_out = CommandTemplateExecutor(self._cli_service, command_template.SWITCH_INFO).execute_command()
 
-    # def ports_table(self):
-    #     """
-    #     :rtype: dict
-    #     """
-    #     port_table = {}
-    #     port_logic_output = CommandTemplateExecutor(self._cli_service,
-    #                                                 command_template.PORT_SHOW_LOGIC_TABLE).execute_command()
-    #
-    #     for record in CommandActionsHelper.parse_table(port_logic_output.strip(), r'^\w+\s+\d+\s+\w+\s+e\d+\s+w\d+$'):
-    #         port_table[record[1]] = {'blade': record[2]}
-    #
-    #     port_output = CommandTemplateExecutor(self._cli_service,
-    #                                           command_template.PORT_SHOW).execute_command()
-    #
-    #     for record in CommandActionsHelper.parse_table(port_output.strip(), r'^e\d+\s+\d+\s+\d+\s+\d+\s+w\d+\s+.*$'):
-    #         record_id = re.sub(r'\D', '', record[0])
-    #         if record_id in port_table:
-    #             port_table[record_id]['locked'] = record[1]
-    #             if len(record) > 7:
-    #                 port_table[record_id]['connected'] = re.sub(r'\D', '', record[5])
-    #             else:
-    #                 port_table[record_id]['connected'] = None
-    #     return port_table
+        board_table.update(self._parse_data(info_out.strip()))
+
+        sw_version_out = CommandTemplateExecutor(self._cli_service, command_template.SOFTWARE_VERSION).execute_command()
+        board_table.update(self._parse_data(sw_version_out.strip()))
+
+        sw_setup_out = CommandTemplateExecutor(self._cli_service, command_template.SWITCH_SETUP).execute_command()
+        board_table.update(self._parse_data(sw_setup_out.strip()))
+
+        return board_table
+
+    def ports_table(self):
+        """
+        :rtype: dict
+        """
+        port_table = {}
+        port_logic_output = CommandTemplateExecutor(self._cli_service,
+                                                    command_template.PORT_SHOW).execute_command()
+        for record in port_logic_output.split('\n'):
+            port_id, speed, autoneg = re.split(r':\s+', record)
+            port_table[port_id] = {'speed': speed, 'autoneg': autoneg}
+
+        return port_table
+
+    @staticmethod
+    def _parse_data(out):
+        table = {}
+        for record in out.split('\n'):
+            key, value = re.split(r':\s+', record)
+            table[key] = value
+        return table

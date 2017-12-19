@@ -2,18 +2,21 @@
 # -*- coding: utf-8 -*-
 
 from cloudshell.cli.cli import CLI
-from cloudshell.cli.session.ssh_session import SSHSession
+from cloudshell.cli.command_mode_helper import CommandModeHelper
 from cloudshell.cli.session.telnet_session import TelnetSession
 from cloudshell.cli.session_pool_manager import SessionPoolManager
 from cloudshell.layer_one.core.helper.runtime_configuration import RuntimeConfiguration
 from cloudshell.layer_one.core.layer_one_driver_exception import LayerOneDriverException
+from virtual_wire.cli.command_modes import DefaultCommandMode
+from virtual_wire.cli.vw_ssh_session import VWSSHSession
 
 
-class BaseCliHandler(object):
+class VWCliHandler(object):
     def __init__(self, logger):
         self._logger = logger
         self._cli = CLI(session_pool=SessionPoolManager(max_pool_size=1))
-        self._defined_session_types = {'SSH': SSHSession, 'TELNET': TelnetSession}
+        self.modes = CommandModeHelper.create_command_mode()
+        self._defined_session_types = {'SSH': VWSSHSession, 'TELNET': TelnetSession}
 
         self._session_types = RuntimeConfiguration().read_key(
             'CLI.TYPE', ['SSH']) or self._defined_session_types.keys()
@@ -61,3 +64,15 @@ class BaseCliHandler(object):
             raise LayerOneDriverException(self.__class__.__name__,
                                           "Cli Attributes is not defined, call Login command first")
         return self._cli.get_session(self._new_sessions(), command_mode, self._logger)
+
+    @property
+    def _default_mode(self):
+        return self.modes[DefaultCommandMode]
+
+    def default_mode_service(self):
+        """
+        Default mode session
+        :return:
+        :rtype: cloudshell.cli.cli_service.CliService
+        """
+        return self.get_cli_service(self._default_mode)

@@ -1,3 +1,5 @@
+import re
+
 import virtual_wire.command_templates.system as command_template
 from cloudshell.cli.command_template.command_template_executor import CommandTemplateExecutor
 
@@ -20,7 +22,7 @@ class SystemActions(object):
 
     def get_state_id(self):
         state_id = CommandTemplateExecutor(self._cli_service, command_template.GET_STATE_ID).execute_command()
-        return state_id
+        return re.split(r'\s', state_id.strip())[1]
 
     def set_state_id(self, state_id):
         out = CommandTemplateExecutor(self._cli_service, command_template.SET_STATE_ID).execute_command(
