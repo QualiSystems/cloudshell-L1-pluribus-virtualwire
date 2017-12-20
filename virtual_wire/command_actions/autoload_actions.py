@@ -46,7 +46,7 @@ class AutoloadActions(object):
         """
         port_table = {}
         logic_ports_output = CommandTemplateExecutor(self._cli_service,
-                                                    command_template.PORT_SHOW).execute_command()
+                                                     command_template.PORT_SHOW).execute_command()
 
         phys_ports = self.phys_ports_table()
         for record in re.findall(r'^\d+:.+:.+$', logic_ports_output, flags=re.MULTILINE):
@@ -55,14 +55,15 @@ class AutoloadActions(object):
             speed = speed
             autoneg = autoneg
             phys_id = phys_ports.get(port_id)
-            port_table[port_id] = {'speed': speed, 'autoneg': autoneg, 'phys_id': phys_id}
+            if phys_id:
+                port_table[port_id] = {'speed': speed, 'autoneg': autoneg, 'phys_id': phys_id}
 
         return port_table
 
     def phys_ports_table(self):
         phys_ports_table = {}
         phys_ports_output = CommandTemplateExecutor(self._cli_service,
-                                                   command_template.PHYS_PORT_SHOW).execute_command()
+                                                    command_template.PHYS_PORT_SHOW).execute_command()
         for record in re.findall(r'^\d+:.+$', phys_ports_output, flags=re.MULTILINE):
             logical_id, phys_id = re.split(r':', record.strip())
             phys_ports_table[logical_id] = phys_id
