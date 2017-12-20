@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from cloudshell.layer_one.core.driver_commands_interface import DriverCommandsInterface
-from cloudshell.layer_one.core.response.response_info import GetStateIdResponseInfo
+from cloudshell.layer_one.core.response.response_info import GetStateIdResponseInfo, ResourceDescriptionResponseInfo
+from virtual_wire.autoload.autoload import Autoload
 from virtual_wire.cli.vw_cli_handler import VWCliHandler
 from virtual_wire.command_actions.autoload_actions import AutoloadActions
 from virtual_wire.command_actions.system_actions import SystemActions
-from virtual_wire.helpers.autoload_helper import AutoloadHelper
 
 
 class DriverCommands(DriverCommandsInterface):
@@ -152,8 +152,8 @@ class DriverCommands(DriverCommandsInterface):
             autoload_actions = AutoloadActions(session, self._logger)
             boart_table = autoload_actions.board_table()
             ports_table = autoload_actions.ports_table()
-            autoload_helper = AutoloadHelper(address, boart_table, ports_table, self._logger)
-            autoload_helper.build_structure()
+            autoload_helper = Autoload(address, boart_table, ports_table, self._logger)
+            return ResourceDescriptionResponseInfo(autoload_helper.build_structure())
 
     def map_clear(self, ports):
         """

@@ -1,9 +1,9 @@
 from cloudshell.layer_one.core.response.resource_info.entities.blade import Blade
 from cloudshell.layer_one.core.response.resource_info.entities.chassis import Chassis
-from cloudshell.layer_one.core.response.resource_info.entities.port import Port
+from virtual_wire.autoload.vw_port import VWPort
 
 
-class AutoloadHelper(object):
+class Autoload(object):
     def __init__(self, resource_address, board_table, ports_table, logger):
         self._logger = logger
         self._board_table = board_table
@@ -11,6 +11,7 @@ class AutoloadHelper(object):
         self._resource_address = resource_address
 
         self._chassis_id = '1'
+        self._blade_id = '1'
 
     def _build_chassis(self):
         chassis_dict = {}
@@ -25,28 +26,26 @@ class AutoloadHelper(object):
         chassis_dict[self._chassis_id] = chassis
         return chassis_dict
 
-    def _build_blade(self, blade_name):
-        blade_model = 'Panel'
+    def build_blade(self, chassis_dict):
+        blade_model = 'Virtal Wire Module'
         serial_number = 'NA'
-        blade = Blade(blade_name, 'Generic L1 Module', serial_number)
+        blade = Blade(self._blade_id, 'Generic L1 Module', serial_number)
         blade.set_model_name(blade_model)
         blade.set_serial_number(serial_number)
-        return blade
+        blade.set_parent_resource(chassis_dict.get(self._chassis_id))
+        return {self._blade_id: blade}
 
-    def _build_ports_and_blades(self, chassis_dict):
-        blades_dict = {}
+    def _build_ports(self, blades_dict):
         ports_dict = {}
+        blade = blades_dict.get(self._blade_id)
         for port_id, port_record in self._ports_table.iteritems():
-            blade_id = port_record.get('blade')
-            if blade_id not in blades_dict:
-                blade = self._build_blade(blade_id)
-                blades_dict[blade_id] = blade
-                blade.set_parent_resource(chassis_dict.get(self._chassis_id))
-            else:
-                blade = blades_dict.get(blade_id)
-
-            port = Port(port_id, 'Generic L1 Port', 'NA')
-            port.set_model_name('Port Paired')
+            speed = port_record.get('speed')
+            autoneg = port_record.get('autoneg')
+            phys_id = port_record.get('phys_id')
+            port = VWPort(port_id, phys_id, 'NA')
+            port.set_model_name('{} Port'.format(self._board_table.get('model')))
+            port.set_auto_negotiation(autoneg == 'on')
+            port.set_port_speed(speed)
             port.set_parent_resource(blade)
             ports_dict[port_id] = port
         return ports_dict
@@ -62,6 +61,7 @@ class AutoloadHelper(object):
 
     def build_structure(self):
         chassis_dict = self._build_chassis()
-        ports_dict = self._build_ports_and_blades(chassis_dict)
-        self._build_mappings(ports_dict)
+        blades_dict = self.build_blade(chassis_dict)
+        ports_dict = self._build_ports(blades_dict)
+        # self._build_mappings(ports_dict)
         return chassis_dict.values()
