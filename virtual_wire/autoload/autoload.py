@@ -4,11 +4,12 @@ from virtual_wire.autoload.vw_port import VWPort
 
 
 class Autoload(object):
-    def __init__(self, resource_address, board_table, ports_table, logger):
+    def __init__(self, resource_address, board_table, ports_table, associations_table, logger):
         self._logger = logger
         self._board_table = board_table
         self._ports_table = ports_table
         self._resource_address = resource_address
+        self._associations_table = associations_table
 
         self._chassis_id = '1'
         self._blade_id = '1'
@@ -51,17 +52,15 @@ class Autoload(object):
         return ports_dict
 
     def _build_mappings(self, ports_dict):
-        for port_id, port_record in self._ports_table.iteritems():
-            connected_to = port_record.get('connected')
-            if connected_to:
-                src_port = ports_dict.get(port_id)
-                dst_port = ports_dict.get(connected_to)
-                if src_port and dst_port:
-                    src_port.add_mapping(dst_port)
+        for slave_port_id, master_port_id in self._associations_table.iteritems():
+            slave_port = ports_dict.get(slave_port_id)
+            master_port = ports_dict.get(master_port_id)
+            if slave_port and master_port:
+                slave_port.add_mapping(master_port)
 
     def build_structure(self):
         chassis_dict = self._build_chassis()
         blades_dict = self.build_blade(chassis_dict)
         ports_dict = self._build_ports(blades_dict)
-        # self._build_mappings(ports_dict)
+        self._build_mappings(ports_dict)
         return chassis_dict.values()

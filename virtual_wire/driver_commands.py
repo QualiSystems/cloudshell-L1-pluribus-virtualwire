@@ -152,7 +152,8 @@ class DriverCommands(DriverCommandsInterface):
             autoload_actions = AutoloadActions(session, self._logger)
             boart_table = autoload_actions.board_table()
             ports_table = autoload_actions.ports_table()
-            autoload_helper = Autoload(address, boart_table, ports_table, self._logger)
+            association_table = autoload_actions.associations_table()
+            autoload_helper = Autoload(address, boart_table, ports_table, association_table, self._logger)
             return ResourceDescriptionResponseInfo(autoload_helper.build_structure())
 
     def map_clear(self, ports):

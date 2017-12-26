@@ -83,27 +83,23 @@ class AutoloadActions(object):
             port_list.extend(range_list)
         return port_list
 
-    def associations(self):
+    def _validate_port(self, port):
+        if re.search(r'[-,]', port):
+            raise Exception(self.__class__.__name__, 'Cannot build mappings, driver does not support port ranges')
+
+    def associations_table(self):
         associations_table = {}
         associations_output = CommandTemplateExecutor(self._cli_service,
                                                       command_template.ASSOCIATIONS).execute_command()
-        for record in associations_output.split('\n'):
-            master_ports, slave_ports, name, bidir = re.split(r':', record)
-            master_ports = master_ports.strip()
-            slave_ports = slave_ports.strip()
-            name = name.strip()
-            bidir = bidir.strip()
-            master_ports_list = self._parse_ports(master_ports)
-            slave_ports_list = self._parse_ports(slave_ports)
+        for record in re.findall(r'^[\d,-]+:[\d,-]+:\w+$', associations_output, flags=re.MULTILINE):
+            master_ports, slave_ports, bidir = re.split(r':', record.strip())
+            self._validate_port(master_ports)
+            self._validate_port(slave_ports)
             if bidir.lower() == 'true':
-                for port in slave_ports_list:
-                    associations_table[port] = {'name': name,
-                                                'slave_ports': master_ports_list,
-                                                'bidir': bidir.lower() == 'true'}
-            for port in master_ports_list:
-                associations_table[port] = {'name': name,
-                                            'slave_ports': slave_ports_list,
-                                            'bidir': bidir.lower() == 'true'}
+                associations_table[master_ports] = slave_ports
+                associations_table[slave_ports] = master_ports
+            else:
+                associations_table[slave_ports] = master_ports
         return associations_table
 
     @staticmethod

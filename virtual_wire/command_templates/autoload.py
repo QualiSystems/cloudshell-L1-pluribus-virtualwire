@@ -10,5 +10,5 @@ SWITCH_SETUP = CommandTemplate('switch-setup-show format switch-name', ACTION_MA
 SOFTWARE_VERSION = CommandTemplate('software-show', ACTION_MAP, ERROR_MAP)
 PORT_SHOW = CommandTemplate('port-config-show format port,speed,autoneg parsable-delim ":"', ACTION_MAP, ERROR_MAP)
 PHYS_PORT_SHOW = CommandTemplate('bezel-portmap-show format port,bezel-intf parsable-delim ":"', ACTION_MAP, ERROR_MAP)
-ASSOCIATIONS = CommandTemplate('port-association-show format master-ports,slave-ports,name,bidir, parsable-delim ":"',
+ASSOCIATIONS = CommandTemplate('port-association-show format master-ports,slave-ports,bidir, parsable-delim ":"',
                                ACTION_MAP, ERROR_MAP)

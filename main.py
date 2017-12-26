@@ -22,7 +22,7 @@ class Main(object):
     def run_driver(self, driver_name):
         # Reading runtime configuration
         runtime_config = RuntimeConfiguration(
-            os.path.join(self._driver_path, driver_name + '_' + 'RuntimeConfig.yml'))
+            os.path.join(self._driver_path, driver_name + '_runtime_config.yml'))
 
         # Creating XMl logger instance
         xml_file_name = driver_name + '--' + datetime.now().strftime('%d-%b-%Y--%H-%M-%S') + '.xml'
