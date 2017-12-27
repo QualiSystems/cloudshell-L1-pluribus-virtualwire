@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from cloudshell.layer_one.core.driver_commands_interface import DriverCommandsInterface
+from cloudshell.layer_one.core.layer_one_driver_exception import LayerOneDriverException
 from cloudshell.layer_one.core.response.response_info import GetStateIdResponseInfo, ResourceDescriptionResponseInfo
 from virtual_wire.autoload.autoload import Autoload
 from virtual_wire.cli.vw_cli_handler import VWCliHandler
 from virtual_wire.command_actions.autoload_actions import AutoloadActions
+from virtual_wire.command_actions.mapping_actions import MappingActions
 from virtual_wire.command_actions.system_actions import SystemActions
 
 
@@ -96,7 +98,12 @@ class DriverCommands(DriverCommandsInterface):
                 session.send_command('map bidir {0} {1}'.format(convert_port(src_port), convert_port(dst_port)))
 
         """
-        raise NotImplementedError
+        self._logger.info('MapBidi, SrcPort: {0}, DstPort: {1}'.format(src_port, dst_port))
+        with self._cli_handler.default_mode_service() as session:
+            mapping_actions = MappingActions(session, self._logger)
+            src_logical_port = self._convert_port_address(src_port)
+            dst_logical_port = self._convert_port_address(dst_port)
+            mapping_actions.map_bidi(src_logical_port, dst_logical_port)
 
     def map_uni(self, src_port, dst_ports):
         """
@@ -113,7 +120,11 @@ class DriverCommands(DriverCommandsInterface):
                 for dst_port in dst_ports:
                     session.send_command('map {0} also-to {1}'.format(convert_port(src_port), convert_port(dst_port)))
         """
-        raise NotImplementedError
+        self._logger.info('MapUni, SrcPort: {0}, DstPorts: {1}'.format(src_port, ','.join(dst_ports)))
+        with self._cli_handler.default_mode_service() as session:
+            mapping_actions = MappingActions(session, self._logger)
+            mapping_actions.map_uni(self._convert_port_address(src_port),
+                                    [self._convert_port_address(port) for port in dst_ports])
 
     def get_resource_description(self, address):
         """
@@ -148,6 +159,7 @@ class DriverCommands(DriverCommandsInterface):
 
             return ResourceDescriptionResponseInfo([chassis])
         """
+        self._logger.info('GetResourceDescriprion for: {}'.format(address))
         with self._cli_handler.default_mode_service() as session:
             autoload_actions = AutoloadActions(session, self._logger)
             boart_table = autoload_actions.board_table()
@@ -175,7 +187,10 @@ class DriverCommands(DriverCommandsInterface):
                 if exceptions:
                     raise Exception('self.__class__.__name__', ','.join(exceptions))
         """
-        raise NotImplementedError
+        self._logger.info('MapClear, Ports: {}'.format(','.join(ports)))
+        with self._cli_handler.default_mode_service() as session:
+            mapping_actions = MappingActions(session, self._logger)
+            mapping_actions.map_clear([self._convert_port_address(port) for port in ports])
 
     def map_clear_to(self, src_port, dst_ports):
         """
@@ -194,7 +209,11 @@ class DriverCommands(DriverCommandsInterface):
                     _dst_port = convert_port(port)
                     session.send_command('map clear-to {0} {1}'.format(_src_port, _dst_port))
         """
-        raise NotImplementedError
+        self._logger.info('MapClearTo, SrcPort: {0}, DstPorts: {1}'.format(src_port, ','.join(dst_ports)))
+        with self._cli_handler.default_mode_service() as session:
+            mapping_actions = MappingActions(session, self._logger)
+            mapping_actions.map_clear_to(self._convert_port_address(src_port),
+                                         [self._convert_port_address(port) for port in dst_ports])
 
     def get_attribute_value(self, cs_address, attribute_name):
         """
@@ -213,7 +232,7 @@ class DriverCommands(DriverCommandsInterface):
                 value = session.send_command(command)
                 return AttributeValueResponseInfo(value)
         """
-        raise NotImplementedError
+        raise LayerOneDriverException(self.__class__.__name__, 'GetAttributeValue command is not supported')
 
     def set_attribute_value(self, cs_address, attribute_name, attribute_value):
         """
@@ -249,3 +268,12 @@ class DriverCommands(DriverCommandsInterface):
         :return:
         """
         raise NotImplementedError
+
+    @staticmethod
+    def _convert_port_address(port):
+        """
+        :param port:
+        :type port: str
+        :return:
+        """
+        return port.split('/')[-1]
