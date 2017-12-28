@@ -41,11 +41,11 @@ class Autoload(object):
         blade = blades_dict.get(self._blade_id)
         for port_id, port_record in self._ports_table.iteritems():
             speed = port_record.get('speed')
-            autoneg = port_record.get('autoneg')
+            # autoneg = port_record.get('autoneg')
             phys_id = port_record.get('phys_id')
             port = VWPort(port_id, phys_id, 'NA')
             port.set_model_name('{} Port'.format(self._board_table.get('model')))
-            port.set_auto_negotiation(autoneg == 'on')
+            # port.set_auto_negotiation(autoneg == 'on')
             port.set_port_speed(speed)
             port.set_parent_resource(blade)
             ports_dict[port_id] = port
