@@ -1,5 +1,4 @@
 import re
-from collections import defaultdict
 
 import virtual_wire.command_templates.mapping as command_template
 from cloudshell.cli.command_template.command_template_executor import CommandTemplateExecutor
@@ -12,24 +11,29 @@ class MappingActions(object):
 
     def __init__(self, cli_service, logger):
         """
-        :param cli_service: default mode cli_service
-        :type cli_service: CliService
         :param logger:
         :type logger: Logger
         :return:
         """
-        self._cli_service = cli_service
         self._logger = logger
+        self._cli_service = cli_service
 
         self.__associations_table = None
         self.__phys_to_logical_table = None
 
+    @property
+    def cli_service(self):
+        return self._cli_service
+
+    @cli_service.setter
+    def cli_service(self, cli_service):
+        self._cli_service = cli_service
+
     def _build_associations_table(self):
-        associations_table = defaultdict(list)
+        associations_table = {}
         output = CommandTemplateExecutor(self._cli_service, command_template.ASSOCIATIONS).execute_command()
         for master_port, slave_port, name in re.findall(r'^(\d+):(\d+):([\w-]+)$', output, flags=re.MULTILINE):
-            associations_table[master_port].append(name)
-            associations_table[slave_port].append(name)
+            associations_table[name] = [master_port, slave_port]
         return associations_table
 
     @property
@@ -57,6 +61,18 @@ class MappingActions(object):
             return logical_id
         else:
             raise Exception(self.__class__.__name__, 'Cannot convert physical port name to logical')
+
+    def _find_associations(self, port):
+        result = []
+        for association, ports in self._associations_table.iteritems():
+            if port in ports:
+                result.append(association)
+        return result
+
+    def _find_uni_association(self, ports):
+        for association, as_ports in self._associations_table.iteritems():
+            if ports == as_ports:
+                return association
 
     def map_uni(self, master_port, slave_ports):
         logical_master_id = self._get_logical(master_port)
@@ -89,11 +105,11 @@ class MappingActions(object):
         for port in ports:
             try:
                 port_id = self._get_logical(port)
-                associations = self._associations_table.get(port_id)
+                associations = self._find_associations(port_id)
                 if associations:
                     for association_name in associations:
                         command_executor.execute_command(name=association_name)
-                        associations.remove(association_name)
+                        del self._associations_table[association_name]
             except Exception as e:
                 if len(e.args) > 1:
                     exception_messages.append(e.args[1])
@@ -104,18 +120,15 @@ class MappingActions(object):
 
     def map_clear_to(self, master_port, slave_ports):
         map_clear_command_executor = CommandTemplateExecutor(self._cli_service, command_template.MAP_CLEAR)
-        map_uni_name_executor = CommandTemplateExecutor(self._cli_service, command_template.UNI_ASSOCIATION_NAME)
         master_port_logical_id = self._get_logical(master_port)
         exception_messages = []
         for port in slave_ports:
             try:
                 port_id = self._get_logical(port)
-                association_output = map_uni_name_executor.execute_command(master_ports=master_port_logical_id,
-                                                                           slave_ports=port_id)
-                result = re.search(r'^\d+:\d+:([\w-]+)$', association_output, flags=re.MULTILINE)
-                if result:
-                    association_name = result.group(1)
-                    map_clear_command_executor.execute_command(name=association_name)
+                association = self._find_uni_association([master_port_logical_id, port_id])
+                if association:
+                    map_clear_command_executor.execute_command(name=association)
+                    del self._associations_table[association]
                 else:
                     raise Exception(self.__class__.__name__,
                                     'Cannot find association for master ports {0} and slave ports {1}'.format(

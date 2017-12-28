@@ -6,6 +6,7 @@ from cloudshell.layer_one.core.layer_one_driver_exception import LayerOneDriverE
 from cloudshell.layer_one.core.response.response_info import GetStateIdResponseInfo, ResourceDescriptionResponseInfo
 from virtual_wire.autoload.autoload import Autoload
 from virtual_wire.cli.vw_cli_handler import VWCliHandler
+from virtual_wire.command_actions.actions_helper import ActionsManager
 from virtual_wire.command_actions.autoload_actions import AutoloadActions
 from virtual_wire.command_actions.mapping_actions import MappingActions
 from virtual_wire.command_actions.system_actions import SystemActions
@@ -23,6 +24,21 @@ class DriverCommands(DriverCommandsInterface):
         """
         self._logger = logger
         self._cli_handler = VWCliHandler(self._logger)
+
+        self.__mapping_actions = None
+        self.__system_actions = None
+
+    @property
+    def _mapping_actions(self):
+        if not self.__mapping_actions:
+            self.__mapping_actions = MappingActions(None, self._logger)
+        return self.__mapping_actions
+
+    @property
+    def _system_actions(self):
+        if not self.__system_actions:
+            self.__system_actions = SystemActions(None, self._logger)
+        return self.__system_actions
 
     def login(self, address, username, password):
         """
@@ -46,6 +62,8 @@ class DriverCommands(DriverCommandsInterface):
         with self._cli_handler.default_mode_service() as session:
             autoload_actions = AutoloadActions(session, self._logger)
             self._logger.info(autoload_actions.board_table())
+            self.__mapping_actions = None
+            self.__system_actions = None
 
     def get_state_id(self):
         """
@@ -62,8 +80,8 @@ class DriverCommands(DriverCommandsInterface):
                 return chassis_name
         """
         with self._cli_handler.default_mode_service() as session:
-            system_actions = SystemActions(session, self._logger)
-            return GetStateIdResponseInfo(system_actions.get_state_id())
+            with ActionsManager(self._system_actions, session) as system_actions:
+                return GetStateIdResponseInfo(system_actions.get_state_id())
 
     def set_state_id(self, state_id):
         """
@@ -80,8 +98,8 @@ class DriverCommands(DriverCommandsInterface):
                 session.send_command('set chassis name {}'.format(state_id))
         """
         with self._cli_handler.default_mode_service() as session:
-            system_actions = SystemActions(session, self._logger)
-            system_actions.set_state_id(state_id)
+            with ActionsManager(self._system_actions, session) as system_actions:
+                system_actions.set_state_id(state_id)
 
     def map_bidi(self, src_port, dst_port):
         """
@@ -100,10 +118,10 @@ class DriverCommands(DriverCommandsInterface):
         """
         self._logger.info('MapBidi, SrcPort: {0}, DstPort: {1}'.format(src_port, dst_port))
         with self._cli_handler.default_mode_service() as session:
-            mapping_actions = MappingActions(session, self._logger)
-            src_logical_port = self._convert_port_address(src_port)
-            dst_logical_port = self._convert_port_address(dst_port)
-            mapping_actions.map_bidi(src_logical_port, dst_logical_port)
+            with ActionsManager(self._mapping_actions, session) as mapping_actions:
+                src_logical_port = self._convert_port_address(src_port)
+                dst_logical_port = self._convert_port_address(dst_port)
+                mapping_actions.map_bidi(src_logical_port, dst_logical_port)
 
     def map_uni(self, src_port, dst_ports):
         """
@@ -122,9 +140,9 @@ class DriverCommands(DriverCommandsInterface):
         """
         self._logger.info('MapUni, SrcPort: {0}, DstPorts: {1}'.format(src_port, ','.join(dst_ports)))
         with self._cli_handler.default_mode_service() as session:
-            mapping_actions = MappingActions(session, self._logger)
-            mapping_actions.map_uni(self._convert_port_address(src_port),
-                                    [self._convert_port_address(port) for port in dst_ports])
+            with ActionsManager(self._mapping_actions, session) as mapping_actions:
+                mapping_actions.map_uni(self._convert_port_address(src_port),
+                                        [self._convert_port_address(port) for port in dst_ports])
 
     def get_resource_description(self, address):
         """
@@ -189,8 +207,8 @@ class DriverCommands(DriverCommandsInterface):
         """
         self._logger.info('MapClear, Ports: {}'.format(','.join(ports)))
         with self._cli_handler.default_mode_service() as session:
-            mapping_actions = MappingActions(session, self._logger)
-            mapping_actions.map_clear([self._convert_port_address(port) for port in ports])
+            with ActionsManager(self._mapping_actions, session) as mapping_actions:
+                mapping_actions.map_clear([self._convert_port_address(port) for port in ports])
 
     def map_clear_to(self, src_port, dst_ports):
         """
@@ -211,9 +229,9 @@ class DriverCommands(DriverCommandsInterface):
         """
         self._logger.info('MapClearTo, SrcPort: {0}, DstPorts: {1}'.format(src_port, ','.join(dst_ports)))
         with self._cli_handler.default_mode_service() as session:
-            mapping_actions = MappingActions(session, self._logger)
-            mapping_actions.map_clear_to(self._convert_port_address(src_port),
-                                         [self._convert_port_address(port) for port in dst_ports])
+            with ActionsManager(self._mapping_actions, session) as mapping_actions:
+                mapping_actions.map_clear_to(self._convert_port_address(src_port),
+                                             [self._convert_port_address(port) for port in dst_ports])
 
     def get_attribute_value(self, cs_address, attribute_name):
         """
@@ -253,7 +271,13 @@ class DriverCommands(DriverCommandsInterface):
                 session.send_command(command)
                 return AttributeValueResponseInfo(attribute_value)
         """
-        raise NotImplementedError
+        if attribute_name == 'Auto Negotiation':
+            with self._cli_handler.default_mode_service() as session:
+                with ActionsManager(self._system_actions, session) as system_actions:
+                    system_actions.set_auto_negotiation(self._convert_port_address(cs_address), attribute_value)
+        else:
+            raise LayerOneDriverException(self.__class__.__name__,
+                                          'SetAttributeValue for address {} is not supported'.format(cs_address))
 
     def map_tap(self, src_port, dst_ports):
         return self.map_uni(src_port, dst_ports)
