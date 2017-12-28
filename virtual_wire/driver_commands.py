@@ -3,7 +3,8 @@
 
 from cloudshell.layer_one.core.driver_commands_interface import DriverCommandsInterface
 from cloudshell.layer_one.core.layer_one_driver_exception import LayerOneDriverException
-from cloudshell.layer_one.core.response.response_info import GetStateIdResponseInfo, ResourceDescriptionResponseInfo
+from cloudshell.layer_one.core.response.response_info import GetStateIdResponseInfo, ResourceDescriptionResponseInfo, \
+    AttributeValueResponseInfo
 from virtual_wire.autoload.autoload import Autoload
 from virtual_wire.cli.vw_cli_handler import VWCliHandler
 from virtual_wire.command_actions.actions_helper import ActionsManager
@@ -250,7 +251,16 @@ class DriverCommands(DriverCommandsInterface):
                 value = session.send_command(command)
                 return AttributeValueResponseInfo(value)
         """
-        raise LayerOneDriverException(self.__class__.__name__, 'GetAttributeValue command is not supported')
+        if attribute_name == 'Serial Number':
+            if len(cs_address.split('/')) == 1:
+                with self._cli_handler.default_mode_service() as session:
+                    autoload_actions = AutoloadActions(session, self._logger)
+                    board_table = autoload_actions.board_table()
+                    return AttributeValueResponseInfo(board_table.get('chassis-serial'))
+            else:
+                return AttributeValueResponseInfo('NA')
+        else:
+            raise LayerOneDriverException(self.__class__.__name__, 'GetAttributeValue command is not supported')
 
     def set_attribute_value(self, cs_address, attribute_name, attribute_value):
         """
