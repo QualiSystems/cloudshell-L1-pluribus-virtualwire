@@ -129,10 +129,6 @@ class MappingActions(object):
                 if association:
                     map_clear_command_executor.execute_command(name=association)
                     del self._associations_table[association]
-                else:
-                    raise Exception(self.__class__.__name__,
-                                    'Cannot find association for master ports {0} and slave ports {1}'.format(
-                                        master_port_logical_id, port_id))
             except Exception as e:
                 if len(e.args) > 1:
                     exception_messages.append(e.args[1])
