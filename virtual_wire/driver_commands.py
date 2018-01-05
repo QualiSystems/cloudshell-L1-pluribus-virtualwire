@@ -305,7 +305,7 @@ class DriverCommands(DriverCommandsInterface):
         :param duplex:
         :return:
         """
-        raise NotImplementedError
+        pass
 
     @staticmethod
     def _convert_port_address(port):
