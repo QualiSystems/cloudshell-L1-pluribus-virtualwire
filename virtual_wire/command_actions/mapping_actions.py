@@ -1,10 +1,15 @@
 import re
+from copy import copy
 
 import virtual_wire.command_templates.mapping as command_template
 from cloudshell.cli.command_template.command_template_executor import CommandTemplateExecutor
 
 
 class MappingActions(object):
+    PORTS = 'ports'
+    BIDIR = 'bidir'
+    MONITOR_PORTS = 'monitor_ports'
+
     """
     Autoload actions
     """
@@ -29,11 +34,25 @@ class MappingActions(object):
     def cli_service(self, cli_service):
         self._cli_service = cli_service
 
+    @staticmethod
+    def _parse_complex_ports(port_string):
+        ports = []
+        for port in port_string.split(','):
+            if '-' in port:
+                start, end = port.split('-')
+                ports.extend(map(str, range(int(start), int(end) + 1)))
+            elif port:
+                ports.append(port)
+        return ports
+
     def _build_associations_table(self):
         associations_table = {}
         output = CommandTemplateExecutor(self._cli_service, command_template.ASSOCIATIONS).execute_command()
-        for master_port, slave_port, name in re.findall(r'^(\d+):(\d+):([\w-]+)$', output, flags=re.MULTILINE):
-            associations_table[name] = [master_port, slave_port]
+        for master_port, slave_port, name, bidir, monitor_ports in re.findall(r'^(\d+):(\d+):([\w-]+):(\w+):([\d,-]*)$',
+                                                                              output, flags=re.MULTILINE):
+            associations_table[name] = {self.PORTS: [master_port, slave_port],
+                                        self.BIDIR: bidir.lower() == 'true',
+                                        self.MONITOR_PORTS: self._parse_complex_ports(monitor_ports)}
         return associations_table
 
     @property
@@ -45,7 +64,7 @@ class MappingActions(object):
     def _build_phys_to_logical_table(self):
         logical_to_phys_dict = {}
         output = CommandTemplateExecutor(self._cli_service, command_template.PHYS_TO_LOGICAL).execute_command()
-        for phys_id, logical_id in re.findall(r'^([\d\.]+):(\d+)$', output, flags=re.MULTILINE):
+        for phys_id, logical_id in re.findall(r'^([\d.]+):(\d+)$', output, flags=re.MULTILINE):
             logical_to_phys_dict[phys_id] = logical_id
         return logical_to_phys_dict
 
@@ -62,17 +81,17 @@ class MappingActions(object):
         else:
             raise Exception(self.__class__.__name__, 'Cannot convert physical port name to logical')
 
-    def _find_associations(self, port):
-        result = []
-        for association, ports in self._associations_table.iteritems():
-            if port in ports:
-                result.append(association)
-        return result
+    def _find_association(self, port):
+        for name, attributes in self._associations_table.iteritems():
+            if port in attributes.get(self.PORTS):
+                return name
 
-    def _find_uni_association(self, ports):
-        for association, as_ports in self._associations_table.iteritems():
-            if ports == as_ports:
-                return association
+    # def _find_unidir_association(self, ports):
+    #     for name, attributes in self._associations_table.iteritems():
+    #         if ports == attributes.get(self.PORTS) and not attributes.get(self.BIDIR):
+    #             return name
+    # def _find_monitor_association(self, port):
+    #     for name, attributes in self._associations_table.iteritems():
 
     def map_uni(self, master_port, slave_ports):
         logical_master_id = self._get_logical(master_port)
@@ -100,16 +119,12 @@ class MappingActions(object):
         return associations_output
 
     def map_clear(self, ports):
-        command_executor = CommandTemplateExecutor(self._cli_service, command_template.MAP_CLEAR)
         exception_messages = []
         for port in ports:
             try:
                 port_id = self._get_logical(port)
-                associations = self._find_associations(port_id)
-                if associations:
-                    for association_name in associations:
-                        command_executor.execute_command(name=association_name)
-                        del self._associations_table[association_name]
+                association = self._find_association(port_id)
+                self._remove_association(association)
             except Exception as e:
                 if len(e.args) > 1:
                     exception_messages.append(e.args[1])
@@ -118,21 +133,61 @@ class MappingActions(object):
         if exception_messages:
             raise Exception(self.__class__.__name__, ', '.join(exception_messages))
 
+    def _remove_association(self, association_name):
+        if association_name:
+            command_executor = CommandTemplateExecutor(self._cli_service, command_template.MAP_CLEAR)
+            command_executor.execute_command(name=association_name)
+            del self._associations_table[association_name]
+
+    def _modify_monitor_ports(self, association_name, monitor_ports):
+        association_attributes = self._associations_table.get(association_name)
+        if association_attributes.get(self.MONITOR_PORTS) != monitor_ports:
+            command_executor = CommandTemplateExecutor(self._cli_service, command_template.MODIFY_MONITOR_PORTS)
+            command_executor.execute_command(name=association_name, ports=','.join(monitor_ports))
+            association_attributes[self.MONITOR_PORTS] = monitor_ports
+
     def map_clear_to(self, master_port, slave_ports):
-        map_clear_command_executor = CommandTemplateExecutor(self._cli_service, command_template.MAP_CLEAR)
         master_port_logical_id = self._get_logical(master_port)
+        slave_ports_logical_ids = map(self._get_logical, slave_ports)
         exception_messages = []
-        for port in slave_ports:
-            try:
-                port_id = self._get_logical(port)
-                association = self._find_uni_association([master_port_logical_id, port_id])
-                if association:
-                    map_clear_command_executor.execute_command(name=association)
-                    del self._associations_table[association]
-            except Exception as e:
-                if len(e.args) > 1:
-                    exception_messages.append(e.args[1])
-                elif len(e.args) == 1:
-                    exception_messages.append(e.args[0])
+        try:
+            association_name = self._find_association(master_port_logical_id)
+            if association_name:
+                association_attributes = self._associations_table.get(association_name)
+                association_ports = association_attributes.get(self.PORTS)
+                # Second port of association
+                association_second_port = association_ports[1 - association_ports.index(master_port_logical_id)]
+                if association_second_port in slave_ports_logical_ids:
+                    self._remove_association(association_name)
+                else:
+                    monitor_ports = copy(association_attributes.get(self.MONITOR_PORTS))
+                    for port in slave_ports_logical_ids:
+                        if port in monitor_ports:
+                            monitor_ports.remove(port)
+                    self._modify_monitor_ports(association_name, monitor_ports)
+
+        except Exception as e:
+            if len(e.args) > 1:
+                exception_messages.append(e.args[1])
+            elif len(e.args) == 1:
+                exception_messages.append(e.args[0])
         if exception_messages:
             raise Exception(self.__class__.__name__, ', '.join(exception_messages))
+
+    def map_tap(self, master_port, monitor_ports):
+        master_port_logical = self._get_logical(master_port)
+        monitor_ports_logical = map(self._get_logical, monitor_ports)
+        association_name = self._find_association(master_port_logical)
+        if not association_name:
+            raise Exception(self.__class__.__name__,
+                            "Cannot find association with port {}".format(master_port_logical))
+        association_attributes = self._associations_table.get(association_name)
+        association_monitor_ports = copy(association_attributes.get(self.MONITOR_PORTS))
+        for port in monitor_ports_logical:
+            if port in association_monitor_ports:
+                raise Exception(self.__class__.__name__,
+                                'Port {0} has already exist in monitor ports for association {1}'.format(port,
+                                                                                                         association_name))
+            else:
+                association_monitor_ports.append(port)
+        self._modify_monitor_ports(association_name, association_monitor_ports)

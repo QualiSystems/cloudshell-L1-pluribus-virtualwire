@@ -290,7 +290,11 @@ class DriverCommands(DriverCommandsInterface):
                                           'SetAttributeValue for address {} is not supported'.format(cs_address))
 
     def map_tap(self, src_port, dst_ports):
-        return self.map_uni(src_port, dst_ports)
+        self._logger.info('MapTap, SrcPort: {0}, DstPorts: {1}'.format(src_port, ','.join(dst_ports)))
+        with self._cli_handler.default_mode_service() as session:
+            with ActionsManager(self._mapping_actions, session) as mapping_actions:
+                mapping_actions.map_tap(self._convert_port_address(src_port),
+                                        [self._convert_port_address(port) for port in dst_ports])
 
     def set_speed_manual(self, src_port, dst_port, speed, duplex):
         """
