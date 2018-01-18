@@ -186,7 +186,7 @@
                     </AttachedAttributes>
                     <AttributeValues/>
                     <ParentModels>
-                        <ParentModelName>Virtual Wire Chassis</ParentModelName>
+                        <ParentModelName>Pluribus Virtual Wire Chassis</ParentModelName>
                     </ParentModels>
                     <Drivers/>
                 </ResourceModel>
