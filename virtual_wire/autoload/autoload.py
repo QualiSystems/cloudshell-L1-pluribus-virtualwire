@@ -20,7 +20,7 @@ class Autoload(object):
         serial_number = self._board_table.get('chassis-serial')
         model_name = self._board_table.get('model')
         sw_version = self._board_table.get('version')
-        chassis = Chassis(self._chassis_id, self._resource_address, 'Virtual Wire Chassis', serial_number)
+        chassis = Chassis(self._chassis_id, self._resource_address, 'Pluribus Virtual Wire Chassis', serial_number)
         chassis.set_model_name(model_name)
         chassis.set_serial_number(serial_number)
         chassis.set_os_version(sw_version)

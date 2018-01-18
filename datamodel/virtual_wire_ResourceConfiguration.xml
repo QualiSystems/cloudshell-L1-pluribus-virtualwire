@@ -146,7 +146,7 @@
             </AttachedAttributes>
             <AttributeValues/>
             <Models>
-                <ResourceModel Name="Virtual Wire Chassis" Description="" SupportsConcurrentCommands="false">
+                <ResourceModel Name="Pluribus Virtual Wire Chassis" Description="" SupportsConcurrentCommands="false">
                     <AttachedAttributes>
                         <AttachedAttribute Name="Model Name" IsOverridable="true" IsLocal="true">
                             <AllowedValues/>
@@ -250,7 +250,7 @@
         </ResourceFamily>
     </ResourceFamilies>
     <DriverDescriptors>
-        <DriverDescriptor Name="VIRTUAL WIRE" DriverType="L1SwitchTclDriver"
+        <DriverDescriptor Name="PLURIBUS VIRTUAL WIRE" DriverType="L1SwitchTclDriver"
                           CustomParams="virtual_wire.exe"/>
     </DriverDescriptors>
 </ResourceManagementExportImport>
