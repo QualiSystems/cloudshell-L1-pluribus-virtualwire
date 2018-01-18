@@ -161,7 +161,7 @@
                     <AttributeValues/>
                     <ParentModels/>
                     <Drivers>
-                        <DriverName>VIRTUAL WIRE</DriverName>
+                        <DriverName>PLURIBUS VIRTUAL WIRE</DriverName>
                     </Drivers>
                 </ResourceModel>
             </Models>
