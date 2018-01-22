@@ -11,8 +11,8 @@ class Autoload(object):
         self._resource_address = resource_address
         self._associations_table = associations_table
 
-        self._chassis_id = '01'
-        self._blade_id = '01'
+        self._chassis_id = '1'
+        self._blade_id = '1'
 
     def _build_chassis(self):
         chassis_dict = {}
@@ -29,10 +29,8 @@ class Autoload(object):
 
     def build_blade(self, chassis_dict):
         blade_model = 'Virtal Wire Module'
-        serial_number = 'NA'
-        blade = Blade(self._blade_id, 'Generic L1 Module', serial_number)
+        blade = Blade(self._blade_id)
         blade.set_model_name(blade_model)
-        blade.set_serial_number(serial_number)
         blade.set_parent_resource(chassis_dict.get(self._chassis_id))
         return {self._blade_id: blade}
 
@@ -43,7 +41,7 @@ class Autoload(object):
             speed = port_record.get('speed')
             # autoneg = port_record.get('autoneg')
             phys_id = port_record.get('phys_id')
-            port = VWPort(port_id if len(port_id) > 1 else '0' + port_id, phys_id, 'NA')
+            port = VWPort(port_id, phys_id)
             port.set_model_name('{} Port'.format(self._board_table.get('model')))
             # port.set_auto_negotiation(autoneg == 'on')
             port.set_port_speed(speed)
