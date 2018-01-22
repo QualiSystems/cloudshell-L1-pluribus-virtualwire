@@ -11,8 +11,8 @@ class Autoload(object):
         self._resource_address = resource_address
         self._associations_table = associations_table
 
-        self._chassis_id = '1'
-        self._blade_id = '1'
+        self._chassis_id = '01'
+        self._blade_id = '01'
 
     def _build_chassis(self):
         chassis_dict = {}
@@ -43,7 +43,7 @@ class Autoload(object):
             speed = port_record.get('speed')
             # autoneg = port_record.get('autoneg')
             phys_id = port_record.get('phys_id')
-            port = VWPort(port_id, phys_id, 'NA')
+            port = VWPort(port_id if len(port_id) > 1 else '0' + port_id, phys_id, 'NA')
             port.set_model_name('{} Port'.format(self._board_table.get('model')))
             # port.set_auto_negotiation(autoneg == 'on')
             port.set_port_speed(speed)
