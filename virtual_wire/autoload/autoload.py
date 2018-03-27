@@ -44,6 +44,7 @@ class Autoload(object):
             port = VWPort(port_id, phys_id)
             port.set_model_name('{} Port'.format(self._board_table.get('model')))
             # port.set_auto_negotiation(autoneg == 'on')
+            port.set_protocol_by_speed(speed)
             port.set_port_speed(speed)
             port.set_parent_resource(blade)
             ports_dict[port_id] = port

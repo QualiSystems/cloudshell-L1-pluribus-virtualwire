@@ -78,6 +78,11 @@
             </Tags>
             <LookupValues>
                 <LookupValue NumericValue="2" StringValue="Transparent"/>
+                <LookupValue NumericValue="81" StringValue="Pluribus NVOS Port 1 Gbps" />
+                <LookupValue NumericValue="82" StringValue="Pluribus NVOS Port 10 Gbps" />
+                <LookupValue NumericValue="83" StringValue="Pluribus NVOS Port 25 Gbps" />
+                <LookupValue NumericValue="84" StringValue="Pluribus NVOS Port 40 Gbps" />
+                <LookupValue NumericValue="85" StringValue="Pluribus NVOS Port 100 Gbps" />
             </LookupValues>
         </AttributeInfo>
         <AttributeInfo Name="Protocol Value" Type="String" DefaultValue="NA" IsReadOnly="true" IsCommand="true">
