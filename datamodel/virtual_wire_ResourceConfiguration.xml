@@ -78,6 +78,11 @@
             </Tags>
             <LookupValues>
                 <LookupValue NumericValue="2" StringValue="Transparent"/>
+                <LookupValue NumericValue="81" StringValue="Pluribus NVOS Port 1 Gbps" />
+                <LookupValue NumericValue="82" StringValue="Pluribus NVOS Port 10 Gbps" />
+                <LookupValue NumericValue="83" StringValue="Pluribus NVOS Port 25 Gbps" />
+                <LookupValue NumericValue="84" StringValue="Pluribus NVOS Port 40 Gbps" />
+                <LookupValue NumericValue="85" StringValue="Pluribus NVOS Port 100 Gbps" />
             </LookupValues>
         </AttributeInfo>
         <AttributeInfo Name="Protocol Value" Type="String" DefaultValue="NA" IsReadOnly="true" IsCommand="true">
@@ -94,11 +99,7 @@
             </Tags>
             <LookupValues>
                 <LookupValue NumericValue="0" StringValue="Transparent"/>
-                <LookupValue NumericValue="81" StringValue="Pluribus NVOS Port 1 Gbps" />
-                <LookupValue NumericValue="82" StringValue="Pluribus NVOS Port 10 Gbps" />
-                <LookupValue NumericValue="83" StringValue="Pluribus NVOS Port 25 Gbps" />
-                <LookupValue NumericValue="84" StringValue="Pluribus NVOS Port 40 Gbps" />
-                <LookupValue NumericValue="85" StringValue="Pluribus NVOS Port 100 Gbps" />
+                <LookupValue NumericValue="80" StringValue="Pluribus Port"/>
             </LookupValues>
         </AttributeInfo>
         <AttributeInfo Name="Protocol Type Value" Type="String" DefaultValue="NA" IsReadOnly="true" IsCommand="true">
@@ -210,16 +211,17 @@
                         <AttachedAttribute Name="Protocol" IsOverridable="true" IsLocal="false">
                             <AllowedValues>
                                 <AllowedValue>2</AllowedValue>
-                            </AllowedValues>
-                        </AttachedAttribute>
-                        <AttachedAttribute Name="Protocol Type" IsOverridable="true" IsLocal="false">
-                            <AllowedValues>
-                                <AllowedValue>0</AllowedValue>
                                 <AllowedValue>81</AllowedValue>
                                 <AllowedValue>82</AllowedValue>
                                 <AllowedValue>83</AllowedValue>
                                 <AllowedValue>84</AllowedValue>
                                 <AllowedValue>85</AllowedValue>
+                            </AllowedValues>
+                        </AttachedAttribute>
+                        <AttachedAttribute Name="Protocol Type" IsOverridable="true" IsLocal="false">
+                            <AllowedValues>
+                                <AllowedValue>0</AllowedValue>
+                                <AllowedValue>80</AllowedValue>
                             </AllowedValues>
                         </AttachedAttribute>
                         <AttachedAttribute Name="Protocol Value" IsOverridable="true" IsLocal="false">
