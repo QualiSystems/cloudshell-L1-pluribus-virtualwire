@@ -210,6 +210,11 @@
                         <AttachedAttribute Name="Protocol" IsOverridable="true" IsLocal="false">
                             <AllowedValues>
                                 <AllowedValue>2</AllowedValue>
+                                <AllowedValue>81</AllowedValue>
+                                <AllowedValue>82</AllowedValue>
+                                <AllowedValue>83</AllowedValue>
+                                <AllowedValue>84</AllowedValue>
+                                <AllowedValue>85</AllowedValue>
                             </AllowedValues>
                         </AttachedAttribute>
                         <AttachedAttribute Name="Protocol Type" IsOverridable="true" IsLocal="false">
