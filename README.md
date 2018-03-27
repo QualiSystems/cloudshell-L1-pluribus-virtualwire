@@ -1,7 +1,7 @@
-# Virtual Wire L1 Driver
+# Pluribus Netvisor® VirtualWire™ L1 Driver
 
 ## Overview
-The Virtual Wire L1 Driver provides CloudShell Resource Manager with the capability to communicate with switches that are part of the CloudShell inventory.
+The VirtualWire L1 Driver provides CloudShell Resource Manager with the capability to communicate with switches that are part of the CloudShell inventory.
 
 End users will be able to create routes, configure port settings, and read values from the switch using the CloudShell Portal, Resource Manager client, or the CloudShell API.
 
