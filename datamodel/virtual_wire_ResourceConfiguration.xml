@@ -248,8 +248,8 @@
                         </AttachedAttribute>
                     </AttachedAttributes>
                     <AttributeValues>
-                        <AttributeValue Name="Protocol" Value="2"/>
-                        <AttributeValue Name="Protocol Type" Value="0"/>
+                        <AttributeValue Name="Protocol" Value="80"/>
+                        <AttributeValue Name="Protocol Type" Value="81"/>
                     </AttributeValues>
                     <ParentModels>
                         <ParentModelName>Generic L1 Module</ParentModelName>
