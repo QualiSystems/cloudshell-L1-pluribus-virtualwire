@@ -78,7 +78,6 @@
             </Tags>
             <LookupValues>
                 <LookupValue NumericValue="2" StringValue="Transparent"/>
-                <LookupValue NumericValue="80" StringValue="Pluribus Port"/>
             </LookupValues>
         </AttributeInfo>
         <AttributeInfo Name="Protocol Value" Type="String" DefaultValue="NA" IsReadOnly="true" IsCommand="true">
@@ -95,11 +94,6 @@
             </Tags>
             <LookupValues>
                 <LookupValue NumericValue="0" StringValue="Transparent"/>
-                <LookupValue NumericValue="81" StringValue="Pluribus NVOS Port 1 Gbps" />
-                <LookupValue NumericValue="82" StringValue="Pluribus NVOS Port 10 Gbps" />
-                <LookupValue NumericValue="83" StringValue="Pluribus NVOS Port 25 Gbps" />
-                <LookupValue NumericValue="84" StringValue="Pluribus NVOS Port 40 Gbps" />
-                <LookupValue NumericValue="85" StringValue="Pluribus NVOS Port 100 Gbps" />
             </LookupValues>
         </AttributeInfo>
         <AttributeInfo Name="Protocol Type Value" Type="String" DefaultValue="NA" IsReadOnly="true" IsCommand="true">
@@ -210,16 +204,12 @@
                     <AttachedAttributes>
                         <AttachedAttribute Name="Protocol" IsOverridable="true" IsLocal="false">
                             <AllowedValues>
-                                <AllowedValue>80</AllowedValue>
+                                <AllowedValue>2</AllowedValue>
                             </AllowedValues>
                         </AttachedAttribute>
                         <AttachedAttribute Name="Protocol Type" IsOverridable="true" IsLocal="false">
                             <AllowedValues>
-                                <AllowedValue>81</AllowedValue>
-                                <AllowedValue>82</AllowedValue>
-                                <AllowedValue>83</AllowedValue>
-                                <AllowedValue>84</AllowedValue>
-                                <AllowedValue>85</AllowedValue>
+                                <AllowedValue>0</AllowedValue>
                             </AllowedValues>
                         </AttachedAttribute>
                         <AttachedAttribute Name="Protocol Value" IsOverridable="true" IsLocal="false">
@@ -248,8 +238,8 @@
                         </AttachedAttribute>
                     </AttachedAttributes>
                     <AttributeValues>
-                        <AttributeValue Name="Protocol" Value="80"/>
-                        <AttributeValue Name="Protocol Type" Value="81"/>
+                        <AttributeValue Name="Protocol" Value="2"/>
+                        <AttributeValue Name="Protocol Type" Value="0"/>
                     </AttributeValues>
                     <ParentModels>
                         <ParentModelName>Generic L1 Module</ParentModelName>
