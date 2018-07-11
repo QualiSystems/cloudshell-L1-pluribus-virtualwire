@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+import os
 import re
 
 import virtual_wire.command_templates.autoload as command_template
@@ -105,7 +105,8 @@ class AutoloadActions(object):
     @staticmethod
     def _parse_data(out):
         table = {}
-        for record in out.split('\n'):
-            key, value = re.split(r':\s+', record)
-            table[key] = value
+        for record in out.split(os.linesep):
+            if re.search(r':\s+', record):
+                key, value = re.split(r':\s+', record)
+                table[key] = value
         return table
