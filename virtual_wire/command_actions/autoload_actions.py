@@ -105,7 +105,7 @@ class AutoloadActions(object):
     @staticmethod
     def _parse_data(out):
         table = {}
-        for record in out.split(os.linesep):
+        for record in out.splitlines():
             if re.search(r':\s+', record):
                 key, value = re.split(r':\s+', record)
                 table[key] = value
