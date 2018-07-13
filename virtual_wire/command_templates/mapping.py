@@ -24,4 +24,5 @@ PHYS_TO_LOGICAL = CommandTemplate('bezel-portmap-show format bezel-intf,port par
                                   ERROR_MAP)
 MODIFY_MONITOR_PORTS = CommandTemplate('port-association-modify name {name} monitor-ports "{ports}" virtual-wire',
                                        ACTION_MAP, ERROR_MAP)
-IS_ENABLED = CommandTemplate('port-config-show port {port} format enable parsable-delim ":"', ACTION_MAP, ERROR_MAP)
+IS_ENABLED = CommandTemplate('port-config-show port {port} format intf,enable parsable-delim ":"', ACTION_MAP,
+                             ERROR_MAP)

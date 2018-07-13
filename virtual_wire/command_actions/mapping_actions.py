@@ -201,6 +201,6 @@ class MappingActions(object):
     def _validate_port(self, logical_port_id):
         output = CommandTemplateExecutor(self._cli_service, command_template.IS_ENABLED).execute_command(
             port=logical_port_id)
-        if 'on' in output.lower():
+        if '{}:on'.format(logical_port_id) in output.lower():
             return
         raise Exception('Port {} is disabled'.format(logical_port_id))
