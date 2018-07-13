@@ -95,11 +95,13 @@ class MappingActions(object):
 
     def map_uni(self, master_port, slave_ports):
         logical_master_id = self._get_logical(master_port)
+        self._validate_port(logical_master_id)
         command_executor = CommandTemplateExecutor(self._cli_service, command_template.MAP_UNI)
         exception_messages = []
         for slave_port in slave_ports:
             try:
                 logical_slave_id = self._get_logical(slave_port)
+                self._validate_port(logical_slave_id)
                 command_executor.execute_command(master_ports=logical_master_id, slave_ports=logical_slave_id,
                                                  name='{0}-uni-{1}'.format(logical_master_id, logical_slave_id))
             except Exception as e:
@@ -112,7 +114,9 @@ class MappingActions(object):
 
     def map_bidi(self, master_port, slave_port):
         logical_master_id = self._get_logical(master_port)
+        self._validate_port(logical_master_id)
         logical_slave_id = self._get_logical(slave_port)
+        self._validate_port(logical_slave_id)
         associations_output = CommandTemplateExecutor(self._cli_service, command_template.MAP_BIDI).execute_command(
             master_ports=logical_master_id, slave_ports=logical_slave_id,
             name='{0}-bidi-{1}'.format(logical_master_id, logical_slave_id))
@@ -176,6 +180,7 @@ class MappingActions(object):
 
     def map_tap(self, master_port, monitor_ports):
         master_port_logical = self._get_logical(master_port)
+        self._validate_port(master_port_logical)
         monitor_ports_logical = map(self._get_logical, monitor_ports)
         association_name = self._find_association(master_port_logical)
         if not association_name:
@@ -184,6 +189,7 @@ class MappingActions(object):
         association_attributes = self._associations_table.get(association_name)
         association_monitor_ports = copy(association_attributes.get(self.MONITOR_PORTS))
         for port in monitor_ports_logical:
+            self._validate_port(port)
             if port in association_monitor_ports:
                 raise Exception(self.__class__.__name__,
                                 'Port {0} has already exist in monitor ports for association {1}'.format(port,
@@ -191,3 +197,10 @@ class MappingActions(object):
             else:
                 association_monitor_ports.append(port)
         self._modify_monitor_ports(association_name, association_monitor_ports)
+
+    def _validate_port(self, logical_port_id):
+        output = CommandTemplateExecutor(self._cli_service, command_template.IS_ENABLED).execute_command(
+            port=logical_port_id)
+        if 'on' in output.lower():
+            return
+        raise Exception('Port {} is disabled'.format(logical_port_id))
