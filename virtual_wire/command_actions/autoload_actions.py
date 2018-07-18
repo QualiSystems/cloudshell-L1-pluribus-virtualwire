@@ -107,6 +107,6 @@ class AutoloadActions(object):
         table = {}
         for record in out.splitlines():
             if re.search(r':\s+', record):
-                key, value = re.split(r':\s+', record)
+                key, value = re.split(r':\s+', record)[:2]
                 table[key] = value
         return table
