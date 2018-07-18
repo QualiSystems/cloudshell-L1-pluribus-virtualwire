@@ -1,6 +1,6 @@
 from cloudshell.layer_one.core.response.resource_info.entities.blade import Blade
 from cloudshell.layer_one.core.response.resource_info.entities.chassis import Chassis
-from virtual_wire.autoload.vw_port import VWPort
+from netvisor_virtualwire.autoload.vw_port import VWPort
 
 
 class Autoload(object):

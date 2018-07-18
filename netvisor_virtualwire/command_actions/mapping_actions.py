@@ -1,7 +1,7 @@
 import re
 from copy import copy
 
-import virtual_wire.command_templates.mapping as command_template
+import netvisor_virtualwire.command_templates.mapping as command_template
 from cloudshell.cli.command_template.command_template_executor import CommandTemplateExecutor
 
 
