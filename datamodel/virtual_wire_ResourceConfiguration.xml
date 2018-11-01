@@ -251,6 +251,6 @@
     </ResourceFamilies>
     <DriverDescriptors>
         <DriverDescriptor Name="PLURIBUS VIRTUAL WIRE" DriverType="L1SwitchTclDriver"
-                          CustomParams="virtual_wire.exe"/>
+                          CustomParams="netvisor_virtualwire.exe"/>
     </DriverDescriptors>
 </ResourceManagementExportImport>
