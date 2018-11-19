@@ -23,8 +23,6 @@ Document version: 1.0
 # Overview
 A shell integrates a device model, application or other technology with CloudShell. A shell consists of a data model that defines how the device and its properties are modeled in CloudShell, along with automation that enables interaction with the device via CloudShell.
 
-**Note:** Unlike other shells, upgrading an L1 shell requires the use of the QsMigrationUtility, which is provided out-of-the-box with CloudShell.
-
 ### L1 Switch Shells
 L1 switch shells allow CloudShell to manage networking connectivity between physical resources and private cloud provider Apps, such as vCenter.
 
@@ -170,6 +168,8 @@ This section explains how to update your Python dependencies folder. This is req
 L1 shells do not have separate Python dependencies files. All dependencies are included in the L1 shell itself and are installed along with the shell. Therefore, in order to update the shell's Python dependencies, you must upgrade the shell. See [Upgrading the L1 Shell and Datamodel](#upgrading-the-l1-shell-and-datamodel).
 
 # Upgrading the L1 Shell and Datamodel
+
+**Note:** Unlike other shells, upgrading an L1 shell requires the use of the QsMigrationUtility, which is provided out-of-the-box with CloudShell.
 
 **To upgrade the L1 shell and datamodel:**
 1. In the Quali Server machine, remove or rename the L1 shell's folder located in the *Drivers* folder: *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers*.
