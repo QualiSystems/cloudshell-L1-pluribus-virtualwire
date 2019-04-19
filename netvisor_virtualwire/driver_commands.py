@@ -18,13 +18,14 @@ class DriverCommands(DriverCommandsInterface):
     Driver commands implementation
     """
 
-    def __init__(self, logger):
+    def __init__(self, logger, runtime_config):
         """
-        :param logger:
         :type logger: logging.Logger
+        :type runtime_config: cloudshell.layer_one.core.helper.runtime_configuration.RuntimeConfiguration
         """
         self._logger = logger
-        self._cli_handler = VWCliHandler(self._logger)
+        self._runtime_config = runtime_config
+        self._cli_handler = VWCliHandler(self._logger, runtime_config)
 
         self.__mapping_actions = None
         self.__system_actions = None
