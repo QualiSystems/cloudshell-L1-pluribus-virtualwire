@@ -1,7 +1,7 @@
 
 ![](cloudshell_logo.png)
 
-# **Netvisor VirtualWire L1 Shell**
+# **Pluribus VirtualWire L1 Shell**
 
 Release date: 27/12/2018 
 
@@ -29,22 +29,22 @@ L1 switch shells allow CloudShell to manage networking connectivity between phys
 
 For additional information, see the [L1 Switches](http://help.quali.com/Online%20Help/9.0/Portal/Content/Admn/Cnct-Ctrl-L1-Swch.htm?Highlight=L1%20switch) online help topic.
 
-### **Netvisor VirtualWire L1 Shell**
-The Netvisor VirtualWire L1 shell provides you with the capability to communicate with network topology managed by the Pluribus Netvisor switch.
+### **Pluribus VirtualWire L1 Shell**
+The Pluribus VirtualWire L1 shell provides you with the capability to communicate with network topology managed by the Pluribus Netvisor switch.
 
 The shell allows CloudShell users to interact with the device, for example, create and modify route mappings, get device information, and more.
 
-For more information on the **Netvisor VirtualWire**, see the official [**Pluribus Netvisor VirtualWire**](https://www.pluribusnetworks.com/products/virtualwire/) product documentation.
+For more information on the **Pluribus VirtualWire**, see the official [**Pluribus VirtualWire**](https://www.pluribusnetworks.com/products/virtualwire/) product documentation.
 
 ### Standard version
-The Netvisor VirtualWire L1 shell is based on the [**Layer 1 Switch Shell Standard**](https://github.com/QualiSystems/shell-L1-template).
+The Pluribus VirtualWire L1 shell is based on the [**Layer 1 Switch Shell Standard**](https://github.com/QualiSystems/shell-L1-template).
 
 ### Supported OS
 ▪ Netvisor
 
 ### Requirements
 
-Release: **Netvisor VirtualWire L1 Shell**
+Release: **Pluribus VirtualWire L1 Shell**
 
 ▪ CloudShell version: 8.0 and above
 
@@ -52,7 +52,7 @@ Release: **Netvisor VirtualWire L1 Shell**
 
 The shell's data model includes all shell metadata, families, and attributes.
 
-#### **Netvisor VirtualWire Families and Models**
+#### **Pluribus VirtualWire Families and Models**
 
 The L1 switch families and models are listed in the following table:
 
@@ -62,7 +62,7 @@ The L1 switch families and models are listed in the following table:
 |L1 Switch Blade|Generic L1 Module|Generic L1 Module|
 |L1 Switch Port|Generic L1 Port|Generic L1 Port|
 
-#### **Netvisor VirtualWire Attributes**
+#### **Pluribus VirtualWire Attributes**
 
 The Pluribus Virtual Wire Chassis attribute names and types are listed in the following table:
 
@@ -110,16 +110,16 @@ This section describes the automation (drivers) associated with the data model. 
 **Note:** You can only activate a TAP connection after activating a parent MapUni/MapBidi connection. 
 
 # Downloading the Shell
-The **Netvisor VirtualWire** shell is available from the [Quali Community Integrations](https://community.quali.com/integrations) page. 
+The **Pluribus VirtualWire** shell is available from the [Quali Community Integrations](https://community.quali.com/integrations) page. 
 
 The shell comprises:
 
 |File name|Description|
 |:---|:---|
-|cloudshell-L1-netvisor_virtualwire-x.x.x.zip|Netvisor VirtualWire shell package|
-|install_driver.bat|Netvisor VirtualWire shell installation script|
-|netvisor_virtualwire_runtime_config.yml|Netvisor VirtualWire shell configuration file|
-|netvisor_virtualwire_ResourceConfiguration.xml|XML file containing the resource structure, attributes and capabilities of the L1 switches of the same vendor|
+|cloudshell-L1-pluribus-virtualwire-x.x.x.zip|Pluribus VirtualWire shell package|
+|install_driver.bat|Pluribus VirtualWire shell installation script|
+|pluribus_virtualwire_runtime_config.yml|Pluribus VirtualWire shell configuration file|
+|pluribus_virtualwire_ResourceConfiguration.xml|XML file containing the resource structure, attributes and capabilities of the L1 switches of the same vendor|
 
 # Importing and Configuring the Shell
 This section describes how to import the L1 shell and configure and modify the shell’s devices.
@@ -129,21 +129,21 @@ This section describes how to import the L1 shell and configure and modify the s
 **To import and configure the shell in CloudShell:**
   1. Make sure you have the shell’s zip package. If not, download the shell from the [Quali Community's Integrations](https://community.quali.com/integrations) page.
   
-  2. Extract the *Netvisor VirtualWire shell zip* package to the following location on the Quali Server machine: 
+  2. Extract the *Pluribus VirtualWire shell zip* package to the following location on the Quali Server machine: 
   *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers*
   
-  3. Run the *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers\cloudshell-L1-netvisor_virtualwire\install_driver.bat* file.
+  3. Run the *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers\cloudshell-L1-pluribus-virtualwire\install_driver.bat* file.
   
   4. Import the new data model.
       1. In **Resource Manager Client>Admin**, right-click **Resource Families** and select **Import**.
-      2. Select the *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers\cloudshell-L1-netvisor_virtualwire\datamodel\netvisor_virtualwire_ResourceConfiguration.xml* file.
+      2. Select the *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers\cloudshell-L1-pluribus-virtualwire\datamodel\pluribus_virtualwire_ResourceConfiguration.xml* file.
       3. Click **Open**.
 	
   5. Create an L1 resource.
       1. In **Resource Explorer**, right-click **Root** and select **New>Resource**.
       2. Enter the **Name** and **Address**.
       3. Select the **L1 Switch** family.
-      4. Ensure that the correct **Model** Netvisor VirtualWire Chassis and **Driver** NETVISOR VIRTUALWIRE are selected.
+      4. Ensure that the correct **Model** Pluribus VirtualWire Chassis and **Driver** NETVISOR VIRTUALWIRE are selected.
       5. Click **OK**.
 	
   6. Auto Load the new resource.
@@ -161,7 +161,7 @@ This section describes how to import the L1 shell and configure and modify the s
 ### Offline installation of a shell
 Shell installation installs the required dependencies from the shell's zip package.
 
-The *install_driver.bat* script creates a virtual environment on the Quali Server machine under *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers\cloudshell-L1-netvisor_virtualwire* and installs the required dependencies in this virtual environment from the extracted L1 shell folder (under *~cloudshell-L1-netvisor_virtualwire\packages*).
+The *install_driver.bat* script creates a virtual environment on the Quali Server machine under *C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers\cloudshell-L1-pluribus-virtualwire* and installs the required dependencies in this virtual environment from the extracted L1 shell folder (under *~cloudshell-L1-pluribus-virtualwire\packages*).
 
 # Updating Python Dependencies for Shells
 This section explains how to update your Python dependencies folder. This is required when you upgrade a shell that uses new/updated dependencies. It applies to both online and offline dependencies. 
@@ -183,7 +183,7 @@ L1 shells do not have separate Python dependencies files. All dependencies are i
 
 5. Copy the upgraded shell's datamodel file from:
 
-	*C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers\cloudshell-L1-netvisor_virtualwire\datamodel\netvisor_virtualwire_ResourceConfiguration.xml*
+	*C:\Program Files (x86)\QualiSystems\CloudShell\Server\Drivers\cloudshell-L1-pluribus-virtualwire\datamodel\pluribus_virtualwire_ResourceConfiguration.xml*
 	
 	to:
 	
@@ -204,4 +204,4 @@ To connect with Quali users and experts from around the world, ask questions and
 
 ### What's New
 
-For release updates, see the shell's [GitHub releases page](https://github.com/QualiSystems/cloudshell-L1-netvisor_virtualwire/releases).
+For release updates, see the shell's [GitHub releases page](https://github.com/QualiSystems/cloudshell-L1-pluribus-virtualwire/releases).

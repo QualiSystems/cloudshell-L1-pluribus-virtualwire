@@ -161,7 +161,7 @@
                     <AttributeValues/>
                     <ParentModels/>
                     <Drivers>
-                        <DriverName>NETVISOR VIRTUALWIRE</DriverName>
+                        <DriverName>PLURIBUS VIRTUALWIRE</DriverName>
                     </Drivers>
                 </ResourceModel>
             </Models>
@@ -250,7 +250,7 @@
         </ResourceFamily>
     </ResourceFamilies>
     <DriverDescriptors>
-        <DriverDescriptor Name="NETVISOR VIRTUALWIRE" DriverType="L1SwitchTclDriver"
-                          CustomParams="netvisor_virtualwire.exe"/>
+        <DriverDescriptor Name="PLURIBUS VIRTUALWIRE" DriverType="L1SwitchTclDriver"
+                          CustomParams="pluribus-virtualwire.exe"/>
     </DriverDescriptors>
 </ResourceManagementExportImport>

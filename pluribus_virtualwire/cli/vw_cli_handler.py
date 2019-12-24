@@ -7,8 +7,8 @@ from cloudshell.cli.session.telnet_session import TelnetSession
 from cloudshell.cli.session_pool_manager import SessionPoolManager
 from cloudshell.layer_one.core.helper.runtime_configuration import RuntimeConfiguration
 from cloudshell.layer_one.core.layer_one_driver_exception import LayerOneDriverException
-from netvisor_virtualwire.cli.command_modes import DefaultCommandMode
-from netvisor_virtualwire.cli.vw_ssh_session import VWSSHSession
+from pluribus_virtualwire.cli.command_modes import DefaultCommandMode
+from pluribus_virtualwire.cli.vw_ssh_session import VWSSHSession
 
 
 class VWCliHandler(object):
