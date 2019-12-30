@@ -5,12 +5,12 @@ from cloudshell.layer_one.core.driver_commands_interface import DriverCommandsIn
 from cloudshell.layer_one.core.layer_one_driver_exception import LayerOneDriverException
 from cloudshell.layer_one.core.response.response_info import GetStateIdResponseInfo, ResourceDescriptionResponseInfo, \
     AttributeValueResponseInfo
-from netvisor_virtualwire.autoload.autoload import Autoload
-from netvisor_virtualwire.cli.vw_cli_handler import VWCliHandler
-from netvisor_virtualwire.command_actions.actions_helper import ActionsManager
-from netvisor_virtualwire.command_actions.autoload_actions import AutoloadActions
-from netvisor_virtualwire.command_actions.mapping_actions import MappingActions
-from netvisor_virtualwire.command_actions.system_actions import SystemActions
+from pluribus_virtualwire.autoload.autoload import Autoload
+from pluribus_virtualwire.cli.vw_cli_handler import VWCliHandler
+from pluribus_virtualwire.command_actions.actions_helper import ActionsManager
+from pluribus_virtualwire.command_actions.autoload_actions import AutoloadActions
+from pluribus_virtualwire.command_actions.mapping_actions import MappingActions
+from pluribus_virtualwire.command_actions.system_actions import SystemActions
 
 
 class DriverCommands(DriverCommandsInterface):
@@ -18,13 +18,14 @@ class DriverCommands(DriverCommandsInterface):
     Driver commands implementation
     """
 
-    def __init__(self, logger):
+    def __init__(self, logger, runtime_config):
         """
-        :param logger:
         :type logger: logging.Logger
+        :type runtime_config: cloudshell.layer_one.core.helper.runtime_configuration.RuntimeConfiguration
         """
         self._logger = logger
-        self._cli_handler = VWCliHandler(self._logger)
+        self._runtime_config = runtime_config
+        self._cli_handler = VWCliHandler(self._logger, runtime_config)
 
         self.__mapping_actions = None
         self.__system_actions = None

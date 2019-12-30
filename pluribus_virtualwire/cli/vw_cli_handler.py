@@ -7,20 +7,26 @@ from cloudshell.cli.session.telnet_session import TelnetSession
 from cloudshell.cli.session_pool_manager import SessionPoolManager
 from cloudshell.layer_one.core.helper.runtime_configuration import RuntimeConfiguration
 from cloudshell.layer_one.core.layer_one_driver_exception import LayerOneDriverException
-from netvisor_virtualwire.cli.command_modes import DefaultCommandMode
-from netvisor_virtualwire.cli.vw_ssh_session import VWSSHSession
+from pluribus_virtualwire.cli.command_modes import DefaultCommandMode
+from pluribus_virtualwire.cli.vw_ssh_session import VWSSHSession
 
 
 class VWCliHandler(object):
-    def __init__(self, logger):
+    def __init__(self, logger, runtime_config):
+        """
+        :param logger:
+        :param cloudshell.layer_one.core.helper.runtime_configuration.RuntimeConfiguration runtime_config:
+        """
         self._logger = logger
+        self._runtime_config = runtime_config
         self._cli = CLI(session_pool=SessionPoolManager(max_pool_size=1))
         self.modes = CommandModeHelper.create_command_mode()
-        self._defined_session_types = {'SSH': VWSSHSession, 'TELNET': TelnetSession}
+        self._defined_session_types = {VWSSHSession.SESSION_TYPE: VWSSHSession,
+                                       TelnetSession.SESSION_TYPE: TelnetSession}
 
-        self._session_types = RuntimeConfiguration().read_key(
-            'CLI.TYPE', ['SSH']) or self._defined_session_types.keys()
-        self._ports = RuntimeConfiguration().read_key('CLI.PORTS', '22')
+        self._session_types = self._runtime_config.read_key(
+            'CLI.TYPE', [VWSSHSession.SESSION_TYPE]) or self._defined_session_types.keys()
+        self._ports = RuntimeConfiguration().read_key('CLI.PORTS', {})
 
         self._host = None
         self._username = None
@@ -53,6 +59,7 @@ class VWCliHandler(object):
         self._host = address
         self._username = username
         self._password = password
+        self._default_mode.set_credentials(username, password)
 
     def get_cli_service(self, command_mode):
         """
@@ -67,6 +74,9 @@ class VWCliHandler(object):
 
     @property
     def _default_mode(self):
+        """
+        :rtype: DefaultCommandMode
+        """
         return self.modes[DefaultCommandMode]
 
     def default_mode_service(self):
