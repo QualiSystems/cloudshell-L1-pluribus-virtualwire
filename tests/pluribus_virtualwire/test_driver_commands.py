@@ -1,11 +1,9 @@
 from unittest import TestCase
-
-from mock import Mock
+from unittest.mock import Mock
 
 from cloudshell.layer_one.core.driver_commands_interface import DriverCommandsInterface
+
 from pluribus_virtualwire.driver_commands import DriverCommands
-
-
 
 
 class TestDriverCommands(TestCase):

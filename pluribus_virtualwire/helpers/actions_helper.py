@@ -1,4 +1,7 @@
-class ActionsManager(object):
+from __future__ import annotations
+
+
+class ActionsManager:
     def __init__(self, actions_instance, cli_service):
         self._actions_instance = actions_instance
         self._cli_service = cli_service
